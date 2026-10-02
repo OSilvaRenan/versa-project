@@ -48,13 +48,13 @@ export function FormEditora({ item, className, onOpenChange }: PropsForm) {
   const carregarOpcoes = async () => {
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}api/produto/editoragrupo`
+        `${process.env.NEXT_PUBLIC_API_URL}api/produto/editoragrupo`,
       );
       const dadosTransformados: CboData[] = response.data.Dados.map(
         (item: EditoraDTO) => ({
           Value: item.Codeditoragrupo.toString(),
           Description: item.Nomeditoragrupo,
-        })
+        }),
       );
       setData(dadosTransformados);
     } catch (erro) {

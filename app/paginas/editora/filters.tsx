@@ -76,69 +76,66 @@ export default function FiltersEditora() {
           Editoras
         </h1>
         <div className="flex items-center gap-2">
-         
           <DialogCadastroEditora />
         </div>
       </div>
-
-    
-        <div className="bg-card border rounded-lg p-4 shadow-sm">
-          <div className="flex flex-wrap items-end gap-4">
-            <div className="flex flex-col gap-1.5 min-w-70 sm:min-w-90">
-              <Label className="text-sm font-semibold text-gray-700">
-               Editora:
-              </Label>
-              <div className="relative">
-                <Input
-                  type="text"
-                  placeholder="Buscar por nome..."
-                  className=" h-7 text-sm pr-8"
-                  value={nomeditora}
-                  onChange={(e) => setNomeditora(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handlePesquisa()}
-                />
-                {nomeditora && (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    onClick={() => setNomeditora("")}
-                    className="absolute right-1 top-1/2 -translate-y-1/2 text-gray-400  w-6 p-0 hover:bg-transparent h-7"
-                  >
-                    <X className="h-3.5 w-3.5" />
-                  </Button>
-                )}
-              </div>
-            </div>
-            <div className="flex flex-col ">
-              <ListaEditorasGrupo
-                classNameCombo=" h-7 bg-card"
-                classNameLista=" p-0 bg-card"
-                classeNameInput="h-7"
-                value={dataCbo}
-                onChange={setDataCbo}
-                id="Codeditoragrupo"
+      <div className="bg-card border rounded-lg p-4 shadow-sm">
+        <div className="flex flex-wrap items-end gap-4">
+          <div className="flex flex-col gap-1.5 min-w-70 sm:min-w-90">
+            <Label className="text-sm font-semibold text-gray-700">
+              Editora:
+            </Label>
+            <div className="relative">
+              <Input
+                type="text"
+                placeholder="Buscar por nome..."
+                className=" h-7 text-sm pr-8"
+                value={nomeditora}
+                onChange={(e) => setNomeditora(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handlePesquisa()}
               />
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <Button
-                onClick={handlePesquisa}
-                className="px-4 py-2 font-medium h-7"
-              >
-                <Search className="mr-1.5 h-4 w-4" /> Pesquisar
-              </Button>
-            </div>
-
-            <div className="flex flex-col gap-1.5">
-              <Button
-                variant="secondary"
-                onClick={handleClearAllFilters}
-                className="h-7 text-sm"
-              >
-                Limpar Filtro
-              </Button>
+              {nomeditora && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => setNomeditora("")}
+                  className="absolute right-1 top-1/2 -translate-y-1/2 text-gray-400  w-6 p-0 hover:bg-transparent h-7"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </Button>
+              )}
             </div>
           </div>
+          <div className="flex flex-col ">
+            <ListaEditorasGrupo
+              classNameCombo=" h-7 bg-card"
+              classNameLista=" p-0 bg-card"
+              classeNameInput="h-7"
+              value={dataCbo}
+              onChange={setDataCbo}
+              id="Codeditoragrupo"
+            />
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <Button
+              onClick={handlePesquisa}
+              className="px-4 py-2 font-medium h-7"
+            >
+              <Search className="mr-1.5 h-4 w-4" /> Pesquisar
+            </Button>
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <Button
+              variant="secondary"
+              onClick={handleClearAllFilters}
+              className="h-7 text-sm"
+            >
+              Limpar Filtro
+            </Button>
+          </div>
         </div>
+      </div>
     </div>
   );
 }

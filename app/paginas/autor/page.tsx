@@ -52,7 +52,6 @@ export default function Page() {
       try {
         const pageIndex = parseInt(pg, 10) || 1;
 
-        // Payload plano correspondente à classe C# versaAPP.Bus.AutorRequest
         const request = {
           Nomautor: nomautor,
           PageIndex: pageIndex,

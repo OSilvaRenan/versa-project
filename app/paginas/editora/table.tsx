@@ -60,7 +60,7 @@ export default function TableEditora({ data, page, rota }: TableEditoraProps) {
         header: ({ column }) => (
           <SortableHeader column={column} title="Código" />
         ),
-         cell: ({ row }) => {
+        cell: ({ row }) => {
           const editora = row.original;
           return (
             <div className="flex items-center  gap-1">
@@ -86,9 +86,7 @@ export default function TableEditora({ data, page, rota }: TableEditoraProps) {
           <SortableHeader column={column} title="Editora Grupo" />
         ),
         cell: ({ row }) => (
-          <div className="text-gray-700">
-            {row.getValue("Nomeditoragrupo")}
-          </div>
+          <div className="text-gray-700">{row.getValue("Nomeditoragrupo")}</div>
         ),
       },
     ],

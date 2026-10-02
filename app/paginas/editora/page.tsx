@@ -70,7 +70,7 @@ export default function Page() {
               "Content-Type": "application/json",
             },
             body: JSON.stringify(request),
-          }
+          },
         );
 
         if (isMounted) {
@@ -80,7 +80,7 @@ export default function Page() {
               RecordsCount: 0,
               PageIndex: pageIndex,
               PageSize: pageSize,
-            }
+            },
           );
         }
       } catch (error) {
