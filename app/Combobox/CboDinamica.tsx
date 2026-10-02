@@ -30,15 +30,15 @@ export const CboDinamica = ({ classNameCombo, classNameLista, label, mostrarValu
     // const [itemLista, setItemLista] = useState<CboData>(itemListaSelecionado);
 
     return (
-        <div className="flex flex-col">
-                <Label htmlFor="controlepopover" className="py-2">{label}</Label>
+        <div className="flex flex-col gap-1.5">
+                <Label htmlFor="controlepopover" className="py-0.5">{label}</Label>
                 <Popover open={open} onOpenChange={setOpen}  >
-                    <PopoverTrigger asChild id="controlepopover" className={classNameCombo ?? "w-[360px] h-8"}>
+                    <PopoverTrigger asChild id="controlepopover" className={classNameCombo ?? "w-90 h-7"}>
                         <Button
                             variant="outline"
                             role="combobox"
                             // aria-expanded={open}
-                            className="justify-between px-1 py-4"
+                            className="justify-between px-1 text-xs"
                         // onClick={carregarOpcoes}
                         >
                             {itemListaSelecionado
@@ -49,7 +49,7 @@ export const CboDinamica = ({ classNameCombo, classNameLista, label, mostrarValu
                         </Button>
                     </PopoverTrigger>
                     <PopoverContent
-                        className={classNameLista ?? "w-[360px] p-0"}>
+                        className={classNameLista ?? "w-90 p-0"}>
                         <Command >
                             <CommandInput placeholder="Buscar registro..."
                                 onKeyDown={carregarOpcoes}
@@ -87,7 +87,7 @@ export const CboDinamica = ({ classNameCombo, classNameLista, label, mostrarValu
                     <div className="grid gap-2 self-end px-2">
                         <Input type="text" 
                            value={itemListaSelecionado && itemListaSelecionado.Value !== '-1' ? itemListaSelecionado.Value : ''}
-                            className="w-[50px] h-8 py-4"
+                            className="w-12.5 h-8 py-0"
                             id="formcodeditoragrupo"
                             />
                     </div>

@@ -16,7 +16,7 @@ const Menu = () => {
   return (
     <nav className="bg-sidebar text-sidebar-foreground fixed top-0 left-0 w-full shadow-md px-6 py-4 border-b z-50 flex items-center ">
       {/* Logo na esquerda */}
-      <div className="text-lg font-bold w-50 mr-6 h-10 ">
+      <div className="text-lg  font-bold w-50 mr-6 h-10 ">
         <img
           src="/logoPartnerHorizontal.png"
           alt="Logo versa Partner"
@@ -39,14 +39,14 @@ const Menu = () => {
       {/* Ícones no canto direito */}
       {status === "authenticated" ? (
         <div className="flex items-center gap-3 ml-auto">
-          <NavUser
+          <NavUser 
             user={{
               name: session?.user?.Nome!,
               email: session?.user?.Email!,
               avatar: "/defaultAvatar.png",
             }}
           />
-          <ModeToggle />
+          {/* <ModeToggle /> */}
         </div>
       ) : (
         <div className="flex space-x-2 items-center pr-2">

@@ -52,12 +52,12 @@ export default function LoginForm() {
         setIsLoading(false);
         
         if (result.error === "fetch failed" || result.status === 500) {
-          setApiError("A API parece estar offline. Tente novamente mais tarde.");
+          setApiError("Erro na api.");
         } else {
           setApiError("Usuário ou senha inválidos.");
         }
       } else if (result?.ok) {
-        router.push("/paginas/home");
+        router.push("/paginas/conferencia");
       }
     } catch (err) {
       setIsLoading(false);
@@ -112,7 +112,6 @@ export default function LoginForm() {
               id="password"
               {...register("senha")}
               className="bg-background border-input focus-visible:ring-orange-500 h-11 transition-all"
-              placeholder="••••••••"
               disabled={isLoading}
             />
             {errors.senha && (

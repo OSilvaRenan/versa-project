@@ -57,6 +57,7 @@ export default function EnviaTokenEmailPage({ cnpj, setCnpj, token, setToken,
     setEmail(value);
     setEmailValido(value);
     }
+    
     const EnviaTokenEmail = async () => {
         if (!validateFields()) return;
 

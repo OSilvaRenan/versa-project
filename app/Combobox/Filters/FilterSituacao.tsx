@@ -48,18 +48,31 @@ const FilterSituacao = ({ value, classNameCombo, classNameLista, onSelect }: Pro
         }
     };
 
+    
     useEffect(() => {
         carregarOpcoes();
     }, []);
 
     useEffect(() => {
-        if (data.length > 0) {
-            const selecionado = data.find(item => item.Value === value.toString());
-            if (selecionado) {
-                setItemListaSelecionado(selecionado);
-            }
+    if (data.length > 0) {
+      
+        const selecionado = data.find(item => item.Value === value.toString());
+        
+        if (selecionado) {
+            setItemListaSelecionado(selecionado);
+        } else if (value === -1) {
+            setItemListaSelecionado({ Value: "-1", Description: "Selecione..." });
         }
-    }, [value, data]);
+    }
+}, [value, data]);
+    // useEffect(() => {
+    //     if (data.length > 0) {
+    //         const selecionado = data.find(item => item.Value === value.toString());
+    //         if (selecionado) {
+    //             setItemListaSelecionado(selecionado);
+    //         }
+    //     }
+    // }, [value, data]);
 
     return (
         <CboEstatica 

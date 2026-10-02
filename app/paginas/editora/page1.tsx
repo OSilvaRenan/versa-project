@@ -6,7 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { DotsHorizontalIcon } from "@radix-ui/react-icons";
 import { Pencil } from "lucide-react";
 import Link from "next/link";
-import Paginacao from "../conferencia/paginacao";
+import Paginacao from "../[conferencia]/paginacao";
 import { EditoraDTO } from "./EditoraDTO";
 import Filters from "./filters";
 import { PaginedList } from "@/DTO/PageDTO";

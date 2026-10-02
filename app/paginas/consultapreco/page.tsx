@@ -1,16 +1,22 @@
 "use client";
-import React, { useEffect, useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import BarcodeScanner from '@/components/scanner/BarcodeScanner';
-import axios from 'axios';
-import { Camera, CameraOff, Package, Search } from 'lucide-react';
-import { formatarDinheiro } from '@/app/functions/functions';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import Paginacao from '../conferencia/paginacao';
-import { Page } from '@/DTO/PageDTO';
+import React, { useEffect, useState, useCallback } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import BarcodeScanner from "@/components/scanner/BarcodeScanner";
+import { Camera, CameraOff, Package, Search } from "lucide-react";
+import { formatarDinheiro } from "@/app/functions/functions";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import Paginacao from "../[conferencia]/paginacao";
+import { Page } from "@/DTO/PageDTO";
+import { ConsultaPreco } from "@/dbs/ProdutoDb";
 
 interface Produtos {
   Codproduto: number;
@@ -35,54 +41,70 @@ interface Props {
 
 export default function ConsultaPrecoPage({ searchParams }: Props) {
   const params = React.use(searchParams);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [camera, setCamera] = useState(false);
   const [open, setOpen] = useState(false);
   const [produtos, setProdutos] = useState<PaginedList<Produtos>>();
   const [loading, setLoading] = useState(false);
 
+ const buscaProduto = useCallback(async (termoEspecifico?: string) => {
+  setLoading(true);
+  const textoParaBuscar = typeof termoEspecifico === "string" ? termoEspecifico : searchQuery;
+  const textoLimpo = textoParaBuscar.trim();
+
+  if (!textoLimpo && !termoEspecifico) { 
+      setLoading(false);
+      return; 
+  }
+
+  const isISBN = /^[0-9]{10,13}$/.test(textoLimpo);
+  const request = {
+    Nome: isISBN ? "" : textoLimpo,
+    Editora: "",
+    ISBN: isISBN ? textoLimpo : "",
+    PageIndex: params.pg ? parseInt(params.pg) : 1,
+    PageSize: 10,
+  };
+
+  try {
+    const response = await ConsultaPreco(request);
+    
+    // Verificação de segurança: checa se response e response.data existem
+    if (response && response.data) {
+      setProdutos(response.data);
+    }
+  } catch (error) {
+    console.error("Erro capturado na busca:", error);
+    // Aqui o estado é resetado com segurança se a API der 404 ou 500
+    setProdutos({
+      Dados: [],
+      Page: { PageIndex: 0, PageSize: 0, RecordsCount: 0 },
+    });
+  } finally {
+    setLoading(false);
+  }
+}, [searchQuery, params.pg]);
+
   const handleDetected = (code: string) => {
-    setSearchQuery(code);
-    buscaProduto();
+    setSearchQuery(code); 
+    buscaProduto(code);   
     setCamera(false);
     setOpen(false);
   };
 
   function OpenDialog() {
-    setOpen(open => !open);
-    setCamera(camera => !camera);
+    setOpen((open) => !open);
+    setCamera((camera) => !camera);
   }
-
-  const buscaProduto = async () => {
-    setLoading(true);
-    const isISBN = /^[0-9]{10,13}$/.test(searchQuery.trim());
-    const request = {
-      Nome: isISBN ? "" : searchQuery.trimEnd(),
-      Editora: "",
-      ISBN: isISBN ? searchQuery.trim() : "",
-      PageIndex: params.pg ? parseInt(params.pg) : 1,
-      PageSize: 10,
-    };
-
-    try {
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}api/produto/consultapreco`, request);
-      setProdutos(response.data);
-    } catch (error) {
-      console.error("Erro ao buscar dados:", error);
-      setProdutos({ Dados: [], Page: { PageIndex: 0, PageSize: 0, RecordsCount: 0 } });
-    } finally {
-      setLoading(false);
-    }
-  };
 
   useEffect(() => {
     if (searchQuery !== "") {
       buscaProduto();
     }
-  }, [params.pg]);
+  }, [params.pg]); 
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter') {
+    if (event.key === "Enter") {
       buscaProduto();
     }
   };
@@ -110,14 +132,16 @@ export default function ConsultaPrecoPage({ searchParams }: Props) {
               />
             </div>
             <div className="flex flex-col mb-2 lg:mb-0 mr-1">
-              <Dialog open={open} onOpenChange={OpenDialog} modal={true} >
+              <Dialog open={open} onOpenChange={OpenDialog} modal={true}>
                 <DialogTrigger
                   asChild
                   className="flex items-center justify-center h-8"
                 >
-                  <Button variant="default" >{camera ? <CameraOff /> : <Camera />}</Button>
+                  <Button variant="default">
+                    {camera ? <CameraOff /> : <Camera />}
+                  </Button>
                 </DialogTrigger>
-                <DialogContent className='w-full'>
+                <DialogContent className="w-full">
                   <DialogHeader>
                     <DialogTitle>Scanear Código de Barras</DialogTitle>
                   </DialogHeader>
@@ -128,7 +152,12 @@ export default function ConsultaPrecoPage({ searchParams }: Props) {
               </Dialog>
             </div>
             <div className="flex flex-col mb-2 lg:mb-0">
-              <Button onClick={buscaProduto} type="button" id="btnSearch" className="h-8">
+              <Button
+                onClick={() => buscaProduto()} 
+                type="button"
+                id="btnSearch"
+                className="h-8"
+              >
                 <Search />
               </Button>
             </div>
@@ -136,21 +165,24 @@ export default function ConsultaPrecoPage({ searchParams }: Props) {
 
           <div className="container mx-auto p-4">
             {loading && <p>Carregando...</p>}
-            {!loading && produtos?.Dados.length === 0 && <p>Nenhum produto encontrado</p>}
-            {!loading && produtos &&
+            {!loading && produtos?.Dados.length === 0 && (
+              <p>Nenhum produto encontrado</p>
+            )}
+            {!loading &&
+              produtos &&
               produtos.Dados.map((produto) => (
                 <div
                   key={produto.Codproduto}
-                  className="max-w-full w-full rounded overflow-hidden shadow-lg bg-white p-4 mb-4 flex items-center"
+                  className="max-w-full w-full overflow-hidden shadow-lg bg-background p-4 mb-4 flex items-center  rounded-sm"
                 >
                   <div className="flex-1">
                     <div className="font-bold text-xl mb-2">
                       {produto.Titulo}
                     </div>
-                    <p className="text-gray-700 text-base">
+                    <p className=" text-base">
                       <strong>ISBN:</strong> {produto.Isbn}
                     </p>
-                    <p className="text-gray-700 text-base">
+                    <p className=" text-base">
                       <strong>Valor:</strong> {formatarDinheiro(produto.Preco)}
                     </p>
                   </div>
@@ -162,15 +194,15 @@ export default function ConsultaPrecoPage({ searchParams }: Props) {
                         className="h-full w-full object-cover"
                       />
                     ) : (
-                      <Package className="h-8 w-8 text-gray-700" />
+                      <Package className="h-8 w-8 " />
                     )}
                   </div>
                 </div>
               ))}
           </div>
-          {produtos?.Page ?
+          {produtos?.Page ? (
             <Paginacao page={produtos?.Page!} rota="consultapreco" />
-            : null}
+          ) : null}
         </CardContent>
       </Card>
     </div>

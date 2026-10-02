@@ -1,133 +1,144 @@
-"use client"
-import FilterCliente from '@/app/Combobox/Filters/FilterCliente';
-import FilterOperacao from '@/app/Combobox/Filters/FilterOperacao';
-import FilterSituacao from '@/app/Combobox/Filters/FilterSituacao';
-import FilterTipoPeriodo from '@/app/Combobox/Filters/FilterTipoPeriodo';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+"use client";
+
+import React, { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from 'react';
-import { DialogCadastroEditora } from './DialogCadastroEditora';
-import { EditoraDTO } from './EditoraDTO';
-import { CboData } from '@/app/Combobox/CboEstatica';
-import { apenasNumeros } from '@/app/functions/functions';
-import ListaEditorasGrupo from '@/app/Combobox/ListaEditorasGrupo';
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Search, SlidersVertical, X } from "lucide-react";
+import ListaEditorasGrupo from "../../Combobox/ListaEditorasGrupo";
+import { CboData } from "@/app/Combobox/CboEstatica";
+import axios from "axios";
+import { EditoraDTO } from "./EditoraDTO";
+import { DialogCadastroEditora } from "./DialogCadastroEditora";
+import { Input } from "@/components/ui/input";
 
-interface Props{
-    data: EditoraDTO[]
-}
+export default function FiltersEditora() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
-const Filters = ({data}:Props) => {
+  const [showMoreFilters, setShowMoreFilters] = useState(false);
 
-    const searchParams = useSearchParams()!;
+  const [nomeditora, setNomeditora] = useState(
+    searchParams.get("nomeditora") || "",
+  );
 
-    const [search, setSearch] = useState(searchParams.get('search') || '');
-    const router = useRouter();
-    const params = new URLSearchParams(searchParams);
+  const [dataCbo, setDataCbo] = useState<CboData>({
+    Value: "",
+    Description: searchParams.get("nomeditoragrupo") || "",
+  });
 
-    function Pesquisa() {
+  const [data, setData] = useState<CboData[]>([]);
 
-        if (search) params.set('search', search);
-        const query = params.size ? params.toString() : '';
-
-        router.push('/paginas/editora?' + query);
+  const carregarOpcoes = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}api/produto/editoragrupo`,
+      );
+      const dadosTransformados: CboData[] = response.data.Dados.map(
+        (item: EditoraDTO) => ({
+          Value: item.Codeditoragrupo.toString(),
+          Description: item.Nomeditoragrupo,
+        }),
+      );
+      setData(dadosTransformados);
+    } catch (erro) {
+      console.error("Erro ao carregar opções:", erro);
     }
+  };
 
-    const [filterValue, setFilterValue] = useState('');
-    const [pageIndex, setPageIndex] = useState(0);
-    const pageSize = 10; // Número de itens por página
-    const [filteredData, setFilteredData] = useState<EditoraDTO[]>(data);
-    const [editoras, setEditoras] = useState<EditoraDTO[]>([]);
-    const [pageCount, setPageCount] = useState(0);
-    const [codeditoragrupo, setCodeditoragrupo] = useState<string>('');
-    const [dataCbo, setDataCbo] = useState<CboData>({
-        Value: '',
-        Description: ''
-    });
+  useEffect(() => {
+    carregarOpcoes();
+  }, []);
 
+  const handlePesquisa = () => {
+    const params = new URLSearchParams();
+    if (nomeditora.trim()) {
+      params.set("nomeditora", nomeditora.trim());
+    }
+    if (dataCbo.Value && dataCbo.Value !== "-1")
+      params.set("nomeditoragrupo", dataCbo.Description);
+    params.set("pg", "1");
 
-    // useEffect(() => {
-    //     // Filtragem com base no filtro de valor
-    //     const filteredByFilterValue = filterValue
-    //         ? data.filter(editora =>
-    //             apenasNumeros(filterValue)
-    //                 ? editora.Codeditora.toString().includes(filterValue)
-    //                 : editora.Nomeditora.toUpperCase().includes(filterValue.toUpperCase())
-    //         )
-    //         : data;
+    router.push(`?${params.toString()}`);
+  };
 
-    //     // Filtragem adicional com base no código do grupo de editoras
-    //     // const filteredByCodeditoragrupo = dataCbo.Value != '-1'
-    //     //     ? filteredByFilterValue.filter(editora =>
-    //     //         editora.Codeditoragrupo.toString() === dataCbo.Value
-    //     //     )
-    //     //     : filteredByFilterValue;
+  const handleClearAllFilters = () => {
+    setNomeditora("");
+    setDataCbo({ Value: "", Description: "" });
+    router.push(window.location.pathname);
+  };
 
-    //     // setFilteredData(filteredByCodeditoragrupo);
-    //     // setPageCount(Math.ceil(filteredByCodeditoragrupo.length / pageSize));
-    // }, [filterValue, dataCbo.Value, data, pageSize]);
+  return (
+    <div className="w-full space-y-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b pb-3">
+        <h1 className="text-2xl font-bold text-gray-800 tracking-tight">
+          Editoras
+        </h1>
+        <div className="flex items-center gap-2">
+         
+          <DialogCadastroEditora />
+        </div>
+      </div>
 
-    // Atualiza a lista de editoras na página atual
-    // useEffect(() => {
-    //     const newEditoras = filteredData.slice(pageIndex * pageSize, (pageIndex + 1) * pageSize);
-    //     setEditoras(newEditoras);
-    // }, [pageIndex, filteredData]);
-
-    // const goToPage = (pageNumber: number) => {
-    //     setPageIndex(pageNumber);
-    //     params.set('pg', (pageNumber + 1).toString());
-    //     const query = params.size ? params.toString() : '';
-    //     router.push('/paginas/editora?' + query);
-    // };
-
-    // const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    //     setFilterValue(e.target.value);
-    //     setPageIndex(0);
-    // };
-
-    // useEffect(() => {
-    //     params.set('pg', '1');
-    //     setPageIndex(0);
-    //     const query = params.size ? params.toString() : '';
-    //     router.push('/paginas/editora?' + query);
-    // }, [pageCount]);
-
-    return (
-        <>
-
-            <div className="flex flex-row justify-between py-2 self-center">
-                <span className="py-2"> Consulta Editora </span>
-                <DialogCadastroEditora />
-                <Button onClick={Pesquisa} type="button">Pesquisar</Button>
+    
+        <div className="bg-card border rounded-lg p-4 shadow-sm">
+          <div className="flex flex-wrap items-end gap-4">
+            <div className="flex flex-col gap-1.5 min-w-70 sm:min-w-90">
+              <Label className="text-sm font-semibold text-gray-700">
+               Editora:
+              </Label>
+              <div className="relative">
+                <Input
+                  type="text"
+                  placeholder="Buscar por nome..."
+                  className=" h-7 text-sm pr-8"
+                  value={nomeditora}
+                  onChange={(e) => setNomeditora(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handlePesquisa()}
+                />
+                {nomeditora && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() => setNomeditora("")}
+                    className="absolute right-1 top-1/2 -translate-y-1/2 text-gray-400  w-6 p-0 hover:bg-transparent h-7"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </Button>
+                )}
+              </div>
             </div>
-            <Card className="min-h-[170px]">
-                <CardContent className='container py-2'>
-                    <div className="flex items-end space-x-2 ">
-                        <div className='flex flex-col'>
-                            <Label className="py-2 " htmlFor="filtro">Filtro Editora: </Label>
-                            <div className='flex flex-row space-x-2'>
-                                {/* <input
-                                    id="filtro"
-                                    value={filterValue}
-                                    onChange={handleFilterChange}
-                                    className="h-8 inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm px-2 bg-white border"
-                                /> */}
-                            </div>
-                        </div>
-                        <div className='flex flex-col'>
-                            <ListaEditorasGrupo classNameCombo="w-[200px] h-8" classNameLista="w-[200px] p-0"
-                                value={dataCbo} onChange={setDataCbo} id="cboEditoraGrupoFilter"
-                            />
-                        </div>
-                    </div>
-                </CardContent>
-            </Card>
-        </>
+            <div className="flex flex-col ">
+              <ListaEditorasGrupo
+                classNameCombo=" h-7 bg-card"
+                classNameLista=" p-0 bg-card"
+                classeNameInput="h-7"
+                value={dataCbo}
+                onChange={setDataCbo}
+                id="Codeditoragrupo"
+              />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <Button
+                onClick={handlePesquisa}
+                className="px-4 py-2 font-medium h-7"
+              >
+                <Search className="mr-1.5 h-4 w-4" /> Pesquisar
+              </Button>
+            </div>
 
-
-    )
-};
-
-export default Filters;
+            <div className="flex flex-col gap-1.5">
+              <Button
+                variant="secondary"
+                onClick={handleClearAllFilters}
+                className="h-7 text-sm"
+              >
+                Limpar Filtro
+              </Button>
+            </div>
+          </div>
+        </div>
+    </div>
+  );
+}

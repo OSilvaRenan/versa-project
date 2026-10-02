@@ -1,110 +1,118 @@
+"use client";
+
+import React, { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
+import { PaginedList, Page as PageType } from "@/DTO/PageDTO";
+import { AutorDTO } from "@/DTO/AutorDTO";
+import TableAutor from "./table";
+import FiltersAutor from "./filters";
 import { fetchWrapper } from "@/app/api/fetch";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { DotsHorizontalIcon } from "@radix-ui/react-icons";
-import { Pencil } from "lucide-react";
-import Link from "next/link";
-import Paginacao from "../conferencia/paginacao";
-import { AutorDTO } from "../../../DTO/AutorDTO";
-import Filters from "./filters";
-import { PaginedList } from "@/DTO/PageDTO";
 
-interface searchQuery {
-    search: string;
-}
+export default function Page() {
+  const searchParams = useSearchParams();
 
-interface Props {
-    searchParams: searchQuery
-};
+  const [data, setData] = useState<AutorDTO[]>([]);
+  const [pageData, setPageData] = useState<PageType>({
+    RecordsCount: 0,
+    PageIndex: 1,
+    PageSize: 10,
+  });
+  const [loading, setLoading] = useState<boolean>(false);
 
-export default async function AutorPage({ searchParams }: Props) {
-    const fetchData = async () => {
-        if (searchParams.search != undefined) {
+  const nomautor = searchParams.get("nomautor") || "";
+  const pg = searchParams.get("pg") || "1";
+  const pageSizeParam = searchParams.get("pageSize") || "10";
+  const pageSize = parseInt(pageSizeParam, 10) || 10;
 
-            var request = {
-                nomautor: searchParams.search
-            }
+  const paramsLimpos = new URLSearchParams(searchParams.toString());
+  paramsLimpos.delete("pg");
+  const queryLimpa = paramsLimpos.toString();
+  const rota = `autores${queryLimpa ? `?${queryLimpa}` : ""}`;
+
+  useEffect(() => {
+    let isMounted = true;
 
 
-            const data = await fetchWrapper<PaginedList<AutorDTO>>('api/produto/autor/pesquisa', {
-                method: 'POST',
-                cache: 'no-cache',
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(request)
-            });
+    const temBusca = searchParams.has("nomautor") || searchParams.has("pg");
 
-            return data;
-        }
-
+    if (!temBusca) {
+      setData([]);
+      setPageData({
+        RecordsCount: 0,
+        PageIndex: 1,
+        PageSize: pageSize,
+      });
+      setLoading(false);
+      return;
     }
 
-    var data = await fetchData();
-    var dados = data?.Dados;
-    var page = data?.Page;
+    setLoading(true);
 
-    return (
-        <div className="mx-5">
-            <Filters />
-            <div className='my-5' >
-                <Card className="min-h-[35rem]">
-                    <CardContent className='py-2'>
-                        <div className="mx-auto">
-                            {dados != undefined && dados.length > 0 ?
-                                <Table className=" mx-auto max-h-20">
-                                    <TableHeader>
-                                        <TableRow className="font-medium w-[5px] max-w-[5px] min-w-[5px]">
-                                            <TableHead>Código</TableHead>
-                                            <TableHead>Nome</TableHead>
-                                            <TableHead>Ações</TableHead>
-                                        </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        {dados?.map((autor) => (
-                                            <TableRow key={autor.Codautor} className="h-2 p-0 w-full">
-                                                <TableCell className="h-2 pl-4 w-[50px]" >{autor.Codautor}</TableCell>
-                                                <TableCell className="w-[600px] ">{autor.Nomautor}</TableCell>
+    const fetchData = async () => {
+      try {
+        const pageIndex = parseInt(pg, 10) || 1;
 
-                                                <TableCell className="lg:hidden " >
-                                                    <DropdownMenu>
-                                                        <DropdownMenuTrigger asChild >
-                                                            <Button variant="ghost">
-                                                                <DotsHorizontalIcon />
-                                                            </Button>
-                                                        </DropdownMenuTrigger>
-                                                        <DropdownMenuContent className="w-[60px] min-w-[60px] max-w-[60px] rounded-md">
-                                                            <DropdownMenuItem> <Button variant="ghost" className="p-2"><Link href="#">
-                                                                <Pencil className="p-1" /></Link></Button>
-                                                            </DropdownMenuItem>
-                                                        </DropdownMenuContent>
-                                                    </DropdownMenu>
-                                                </TableCell>
-                                                <TableCell className="hidden space-x-2 lg:flex items-center justify-start">
-                                                    <Button variant="ghost" className="p-2">
-                                                        <Link href="#"> <Pencil className="p-1" />
-                                                        </Link>
-                                                    </Button>
-                                                </TableCell>
-                                            </TableRow>
-                                        )
-                                        )
-                                        }
-                                    </TableBody>
-                                </Table>
-                                :
-                                <span>Nenhum autor encontrado</span>
-                            }
-                        </div>
-                        {page != undefined ?
-                            <Paginacao page={page!} rota="autor" />
-                            : null
-                        }
-                    </CardContent>
-                </Card>
-            </div>
+        // Payload plano correspondente à classe C# versaAPP.Bus.AutorRequest
+        const request = {
+          Nomautor: nomautor,
+          PageIndex: pageIndex,
+          PageSize: pageSize,
+        };
+
+        const response = await fetchWrapper<PaginedList<AutorDTO>>(
+          "api/produto/autor/pesquisa",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(request),
+          }
+        );
+
+        if (isMounted) {
+          setData(response?.Dados ?? []);
+          setPageData(
+            response?.Page ?? {
+              RecordsCount: 0,
+              PageIndex: pageIndex,
+              PageSize: pageSize,
+            }
+          );
+        }
+      } catch (error) {
+        console.error("Erro ao carregar autores:", error);
+        if (isMounted) {
+          setData([]);
+          setPageData({
+            RecordsCount: 0,
+            PageIndex: parseInt(pg, 10) || 1,
+            PageSize: pageSize,
+          });
+        }
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    };
+
+    fetchData();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [searchParams, nomautor, pg, pageSize]);
+
+  return (
+    <div className="w-full min-h-screen p-4 md:p-6 space-y-4">
+      <FiltersAutor />
+
+      {loading ? (
+        <div className="bg-card p-6 text-center text-gray-500 rounded-lg border border-gray-200 shadow-sm">
+          Carregando autores...
         </div>
-    )
+      ) : (
+        <TableAutor data={data} page={pageData} rota={rota} />
+      )}
+    </div>
+  );
 }

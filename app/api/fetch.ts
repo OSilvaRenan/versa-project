@@ -5,7 +5,6 @@ export async function fetchWrapper<T = unknown>(
   const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
   const url = `${baseUrl}/${input.replace(/^\//, "")}`;
-  console.log(" Chamando API em:", url);
 
   try {
     const response = await fetch(url, {

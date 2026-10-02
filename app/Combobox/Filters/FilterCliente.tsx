@@ -1,4 +1,3 @@
-
 "use client"
 import axios from 'axios';
 import { useState } from 'react';
@@ -24,37 +23,52 @@ interface Props {
 const FilterCliente = ({ classNameCombo, classNameLista, value, onSelect }: Props) => {
 
     const [data, setData] = useState<CboData[]>([]);
-    const [itemListaSelecionado, setItemListaSelecionado] = useState<CboData>({ Value: value.toString(), Description: '' });
+    const [itemListaSelecionado, setItemListaSelecionado] = useState<CboData>({ 
+        Value: value.toString(), 
+        Description: '' 
+    });
 
     const carregarOpcoes = async (event: any) => {
         if (event.key === 'Enter') {
+            event.preventDefault();
+            event.stopPropagation();
+
             try {
-
-                var request: ClienteRequest = {
+                const request: ClienteRequest = {
                     Nomcliente: event.target.value,
-                }
-                await axios.post(`${process.env.NEXT_PUBLIC_API_URL}api/clientes`, request).then(response => {
+                };
 
+                const response = await axios.post(
+                    `${process.env.NEXT_PUBLIC_API_URL}api/clientes`, 
+                    request
+                );
+
+                if (response.data) {
                     const dadosTransformados: CboData[] = response.data.map((item: ClienteResponse) => ({
-                        Value: item.Codcliente,
+                        Value: item.Codcliente.toString(),
                         Description: item.Nomcliente
                     }));
 
                     setData(dadosTransformados);
-                });
+                }
 
             } catch (error) {
                 console.error('Erro ao buscar dados:', error);
             }
-
         }
     };
 
     return (
-        <CboDinamica classNameCombo={classNameCombo} classNameLista={classNameLista}
-            label='Cliente:' data={data} setData={setData}
-            carregarOpcoes={carregarOpcoes} mostrarValue={false}
-            itemListaSelecionado={itemListaSelecionado} setItemListaSelecionado={setItemListaSelecionado}
+        <CboDinamica 
+            classNameCombo={classNameCombo} 
+            classNameLista={classNameLista}
+            label='Cliente:' 
+            data={data} 
+            setData={setData}
+            carregarOpcoes={carregarOpcoes} 
+            mostrarValue={false}
+            itemListaSelecionado={itemListaSelecionado} 
+            setItemListaSelecionado={setItemListaSelecionado}
             onSelect={onSelect}
         />
     );

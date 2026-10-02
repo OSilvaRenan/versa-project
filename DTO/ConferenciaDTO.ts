@@ -2,16 +2,17 @@ import { Page } from "./PageDTO";
 
 export interface ConferenciaRequestDTO {
   Codconferencia?: number;
-  Indseparacao?: number;
+  Indseparacao?:  number | null;
   PeriodoInicial?: Date;
   PeriodoFinal?: Date;
   PeriodoTipo?: number;
   Codalmoxarifado?: number;
   Codoperacao?: number;
-  Codsituacao?: number;
+  Codsituacao?: number | null;
   Codcliente?: number;
   Page?: Page;
-  IndEntradaSaida?: number;  
+  IndEntradaSaida?: number;
+  Codempresa: number;
 }
 
 export interface ConferenciaResponseDTO {
@@ -47,6 +48,9 @@ export interface ConferenciaResponseDTO {
   Indnota: number;
   Nomcliente: string;
   Seqconferenciacaixa: string;
+  Indconferencialista: number;
+  Inddivergente: number;
+  Indespecial: number;
 }
 
 export interface conferenciaItensResponseDTO {
@@ -116,7 +120,30 @@ export interface RegistraCaixaRequest {
   Codempresa: number;
   Nrocaixa: number;
   Codembalagem: number;
-};
+}
 
+export interface ConferenciaListaProcessaRequestDTO {
+  Codempresa: number;
+  Codusuario: number;
+}
 
+export interface ConferenciaListaProcessaResponseDTO {
+  CodProduto: number;
+  NomProduto: string;
+  Isbn: string;
+  NroEdicao: string;
+  CodBarra: string;
+  QtdNota: number;
+  QtdConferencia: number;
+  Localizacao: string;
+  IndNaoEnviar: string;
+}
 
+export interface ReinicializaConferenciaListaRequestDTO {
+  Codconferencia: number;
+}
+
+export interface EmpresaResponse {
+    Codempresa: number;
+    Nomempresa: string;
+}

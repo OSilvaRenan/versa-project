@@ -19,7 +19,7 @@ const FilterTipoPeriodo = ({ value, onSelect }: Props) => {
 
     return (
         <Select value={value} onValueChange={(selectedValue) => { onSelect(selectedValue) }}>
-            <SelectTrigger className="h-8 w-40 min-w-full max-w-full" id="tipoperiodo" name="tipoperiodo" >
+            <SelectTrigger className="h-7 w-40 min-w-full max-w-full" id="tipoperiodo" name="tipoperiodo" >
                 <SelectValue />
             </SelectTrigger>
             <SelectContent>

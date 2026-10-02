@@ -18,7 +18,7 @@ export async function ListaProdutosSeparacao(codconferencia: number | string): P
 
 export async function ListaProdutosConferenciaLista(codconferencia: number | string): Promise<ConferenciaListaResponseDTO[]> {
     try {
-        const url = `${process.env.NEXT_PUBLIC_API_URL}api/conferencia/${codconferencia}/conferencialista/produtos`;
+        const url = `${process.env.NEXT_PUBLIC_API_URL}api/conferencia/${codconferencia}/lista/produtos`;
         const response = await axios.get(url);
         return response.data;
     } catch (error) {
@@ -30,7 +30,7 @@ export async function ListaProdutosConferenciaLista(codconferencia: number | str
 // Função para cancelar separacao
 export async function CancelarSeparacao(request: CancelarSeparacaoRequest): Promise<separacaoResponse[]> {
     try {
-        const url = `${process.env.NEXT_PUBLIC_API_URL}}api/conferencia/cancelaonda`;
+        const url = `${process.env.NEXT_PUBLIC_API_URL}api/conferencia/cancelaonda`;
         const response = await axios.get(url, request);
         return response.data;
     } catch (error) {
@@ -66,13 +66,3 @@ export async function AtualizarQtdSeparada(request: AtualizaQtdRequest) {
     }
 }
 
-export async function AtualizarQtdConferenciaLista(codconferencia: number | string, request: ConferenciaListaAtualizaQtdDTO) {
-    try {
-        await axios.post(`${process.env.NEXT_PUBLIC_API_URL}conferencia/${codconferencia}/conferencialista/salvar`, request);
-    } catch (error) {
-        toast({
-            variant: "default",
-            description: "Erro ao atualizar a quantidade separada: " + error,
-        })
-    }
-}

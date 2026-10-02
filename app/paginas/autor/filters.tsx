@@ -1,59 +1,107 @@
-"use client"
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from 'react';
+"use client";
 
+import { useState } from "react";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { Search, RotateCw, X, Link, Plus } from "lucide-react";
 
-const Filters = () => {
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
-    const [search, setSearch] = useState((useSearchParams()!).get('search') || '');
-    const router = useRouter();
+export default function FiltersAutor() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
 
-    function Pesquisa() {
+  const [nomautor, setNomautor] = useState(searchParams.get("nomautor") || "");
 
-        const params = new URLSearchParams(useSearchParams()!);
+  const handlePesquisa = () => {
+    const params = new URLSearchParams();
 
-        if (search) params.set('search', search);
-        const query = params.size ? params.toString() : '';
-
-        router.push('/paginas/autor?' + query);
+    if (nomautor.trim()) {
+      params.set("nomautor", nomautor.trim());
     }
 
-    return (
-        <>
-            <div className="flex flex-row justify-between py-2 self-center">
-                <span className="py-2">Consulta Autor</span>
-                <Button onClick={Pesquisa} type="button">Pesquisar</Button>
+    params.set("pg", "1");
+    router.push(`${pathname}?${params.toString()}`);
+  };
+
+  const handleClear = () => {
+    setNomautor("");
+    router.push(pathname);
+  };
+
+  return (
+    <div className="w-full space-y-4">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b pb-3">
+        <h1 className="text-2xl font-bold text-gray-800 tracking-tight">
+          Autores
+        </h1>
+        <div className="flex items-center gap-2">
+          <Button className="px-4 py-2 font-medium">
+            <a href="/paginas/autor/cadastro">
+              Cadastrar
+            </a>
+          </Button>
+          {/* <Button onClick={handlePesquisa} className="px-4 py-2 font-medium">
+            <Search className="mr-1.5 h-4 w-4" /> Pesquisar
+          </Button> */}
+          {/* <Button
+            variant="secondary"
+            onClick={handlePesquisa}
+            className="px-4 py-2 font-medium"
+          >
+            <RotateCw className="mr-1.5 h-4 w-4" /> Atualizar
+          </Button> */}
+        </div>
+      </div>
+
+      {/* Card de Filtro */}
+      <div className="bg-card border rounded-lg p-4 shadow-sm">
+        <div className="flex flex-wrap items-end gap-4">
+          <div className="flex flex-col gap-1.5 min-w-70 sm:min-w-90">
+            <Label className="text-sm font-semibold text-gray-700">
+              Nome do Autor:
+            </Label>
+            <div className="relative">
+              <Input
+                type="text"
+                placeholder="Buscar por nome..."
+                className=" h-7 text-sm pr-8"
+                value={nomautor}
+                onChange={(e) => setNomautor(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handlePesquisa()}
+              />
+              {nomautor && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => setNomautor("")}
+                  className="absolute right-1 top-1/2 -translate-y-1/2 text-gray-400  w-6 p-0 hover:bg-transparent h-7"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </Button>
+              )}
             </div>
-            <Card className="min-h-[170px] max-w-full">
-                <CardContent>
-                    <div className="flex items-center justify-between max-h-full max-w-full mx-auto ">
-                        <form className="flex items-start flex-row flex-wrap max-w-full lg:justify-start justify-between">
-                            <div className="flex items-start lg:flex-row sm:flex-row sm:space-x-2 flex-column flex-wrap max-w-full lg:justify-start justify-between ">
-                                <div className='flex flex-col lg:pr-2 pt-2'>
-                                <Label className="py-2" htmlFor="search">Nome:</Label>
-                                    <Input
-                                        // type='hidden'
-                                        id="search"
-                                        name="search"
-                                        placeholder="Filter..."
-                                        value={search}
-                                        onChange={(e) => setSearch(e.target.value)}
-                                       className="h-8 lg:w-[200px] w-[200px] max-w-full"
-                                    />
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </CardContent>
-            </Card>
-        </>
-
-
-    )
-};
-
-export default Filters;
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <Button onClick={handlePesquisa} className="px-4 py-2 font-medium h-7">
+            <Search className="mr-1.5 h-4 w-4" /> Pesquisar
+          </Button>
+          </div>
+ 
+          <div className="flex flex-col gap-1.5">
+            <Button
+              variant="secondary"
+              onClick={handleClear}
+              className="h-7 text-sm"
+            >
+              Limpar Filtro
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -31,7 +31,7 @@ const Search = () => {
                     placeholder="Filter..."
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    className="h-8 w-[150px] lg:w-[250px]"
+                    className="h-8 w-37.5 lg:w-62.5"
                 />
                 <FilterAutor width="300px" onAutorSelect={setSearch} />
                 <Button type="submit">Pesquisar</Button>

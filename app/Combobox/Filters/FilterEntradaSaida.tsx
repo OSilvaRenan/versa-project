@@ -11,13 +11,14 @@ interface Props {
 const FilterEntradaSaida = ({ value, onSelect }: Props) => {
 
     const tiposEntradaSaida = [
+        { id: "0", label: "Todas" },
         { id: "1", label: "Entrada" },
         { id: "2", label: "Saída" },
     ]
 
     return (
         <Select value={value} onValueChange={(selectedValue) => { onSelect(selectedValue) }}>
-            <SelectTrigger className="h-8 w-40 min-w-full max-w-full" id="tipoperiodo" name="tipoperiodo" >
+            <SelectTrigger className="h-7 w-40 min-w-full max-w-full" id="tipoperiodo" name="tipoperiodo" >
                 <SelectValue />
             </SelectTrigger>
             <SelectContent>

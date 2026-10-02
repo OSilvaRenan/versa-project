@@ -1,199 +1,154 @@
- "use client"
+"use client";
 
-import * as React from "react"
+import { ChevronRight, GalleryVerticalEnd, SquareTerminal } from "lucide-react";
+import * as React from "react";
+import { usePathname, useSearchParams } from "next/navigation";
+import { useSession } from "next-auth/react";
+
+import { TeamSwitcher } from "@/components/team-switcher";
 import {
-  AudioWaveform,
-  BookOpen,
-  Bot,
-  Command,
-  Frame,
-  GalleryVerticalEnd,
-  Map,
-  PieChart,
-  Settings2,
-  SquareTerminal,
-} from "lucide-react"
-
-import { NavMain } from "@/components/nav-main"
-import { NavProjects } from "@/components/nav-projects"
-import { NavUser } from "@/components/nav-user"
-import { TeamSwitcher } from "@/components/team-switcher"
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
+  SidebarGroup,
   SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
   SidebarRail,
-} from "@/components/ui/sidebar"
-
-export const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
-  teams: [
-    {
-      name: "Vitrola",
-      logo: GalleryVerticalEnd,
-      plan: "Enterprise",
-    },
-    {
-      name: "Edusp",
-      logo: AudioWaveform,
-      plan: "Startup",
-    },
-    {
-      name: "VivaLivro",
-      logo: Command,
-      plan: "Free",
-    },
-  ],
-  navMain: [
-    {
-      title: "Cadastro",
-      url: "#",
-      icon: SquareTerminal,
-      isActive: true,
-      items: [
-        {
-          title: "Autor",
-          url: "/paginas/autor",
-        },
-        {
-          title: "Conferência",
-          url: "/paginas/conferencia",
-        },
-        {
-          title: "Consulta Preço",
-          url: "/paginas/consultapreco",
-        },
-        {
-          title: "Editora",
-          url: "/paginas/editora",
-        },
-        // {
-        //   title: "Cadastro Direito Autoral",
-        //   url: "/paginas/cadastros",
-        // },
-        // {
-        //   title: "Cadastro Direito Autoral p",
-        //   url: "/paginas/cadastros/direitoautoral",
-        // },
-       
-      ],
-    },
-    // {
-    //   title: "Lista",
-    //   url: "#",
-    //   icon: Bot,
-    //   items: [
-    //     {
-    //       title: "Lista Editoras",
-    //       url: "/paginas/lista",
-    //     },
-    //     {
-    //       title: "Lista Autores",
-    //       url: "/paginas/lista/listapaginada",
-    //     },
-    //     {
-    //       title: "Lista Direito Autoral",
-    //       url: "/paginas/lista/direitoautoral",
-    //     },
-    //   ],
-    // },
-    // {
-    //   title: "lstCadastros",
-    //   url: "#",
-    //   icon: Bot,
-    //   items: [
-       
-    //     {
-    //       title: "Lista Direito Autoral",
-    //       url: "/paginas/lstcadastros",
-    //     },
-    //   ],
-    // },
-    // {
-    //   title: "Documentation",
-    //   url: "#",
-    //   icon: BookOpen,
-    //   items: [
-    //     {
-    //       title: "Introduction",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Get Started",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Tutorials",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Changelog",
-    //       url: "#",
-    //     },
-    //   ],
-    // },
-    // {
-    //   title: "Settings",
-    //   url: "#",
-    //   icon: Settings2,
-    //   items: [
-    //     {
-    //       title: "General",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Team",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Billing",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Limits",
-    //       url: "#",
-    //     },
-    //   ],
-    // },
-  ],
-  // projects: [
-  //   {
-  //     name: "Design Engineering",
-  //     url: "#",
-  //     icon: Frame,
-  //   },
-  //   {
-  //     name: "Sales & Marketing",
-  //     url: "#",
-  //     icon: PieChart,
-  //   },
-  //   {
-  //     name: "Travel",
-  //     url: "#",
-  //     icon: Map,
-  //   },
-    
-  // ],
-}
+} from "@/components/ui/sidebar";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { data: session } = useSession();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const checkIsActive = (itemUrl: string) => {
+    const [itemPath, itemQuery] = itemUrl.split("?");
+
+    if (itemPath !== pathname) return false;
+
+    if (!itemQuery) {
+      return !searchParams.has("entrada");
+    }
+
+    const itemParams = new URLSearchParams(itemQuery);
+
+    for (const [key, value] of itemParams.entries()) {
+      if (searchParams.get(key) !== value) {
+        return false;
+      }
+    }
+
+    return true;
+  };
+
+  const data = {
+    user: {
+      name: "shadcn",
+      email: "m@example.com",
+      avatar: "/avatars/shadcn.jpg",
+    },
+    team: {
+      name: session?.user?.Nomempresa || "",
+      logo: GalleryVerticalEnd,
+      plan: "",
+    },
+    navMain: [
+      {
+        title: "Cadastro",
+        url: "#",
+        icon: SquareTerminal,
+        items: [
+          {
+            title: "Autor",
+            url: "/paginas/autor",
+          },
+          {
+            title: "Conferência",
+            url: "/paginas/conferencia",
+          },
+          {
+            title: "Conferência Entrada",
+            url: "/paginas/conferencia?entrada=1",
+          },
+          {
+            title: "Consulta Preço",
+            url: "/paginas/consultapreco",
+          },
+          {
+            title: "Editora",
+            url: "/paginas/editora",
+          },
+        ],
+      },
+    ],
+  };
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
+        <TeamSwitcher team={data.team} />
       </SidebarHeader>
+
       <SidebarContent>
-        <NavMain items={data.navMain} />
-        {/* <NavProjects projects={data.projects} /> */}
+        <SidebarGroup>
+          <SidebarMenu>
+            {data.navMain.map((item) => {
+              const isAnyChildActive = item.items?.some((subItem) =>
+                checkIsActive(subItem.url)
+              );
+
+              return (
+                <Collapsible
+                  key={item.title}
+                  asChild
+                  defaultOpen={isAnyChildActive}
+                  className="group/collapsible"
+                >
+                  <SidebarMenuItem>
+                    <CollapsibleTrigger asChild>
+                      <SidebarMenuButton tooltip={item.title}>
+                        {item.icon && <item.icon />}
+                        <span>{item.title}</span>
+                        <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                      </SidebarMenuButton>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent>
+                      <SidebarMenuSub>
+                        {item.items?.map((subItem) => {
+                          const isActive = checkIsActive(subItem.url);
+
+                          return (
+                            <SidebarMenuSubItem key={subItem.title}>
+                              <SidebarMenuSubButton asChild isActive={isActive}>
+                                <a href={subItem.url}>
+                                  <span>{subItem.title}</span>
+                                </a>
+                              </SidebarMenuSubButton>
+                            </SidebarMenuSubItem>
+                          );
+                        })}
+                      </SidebarMenuSub>
+                    </CollapsibleContent>
+                  </SidebarMenuItem>
+                </Collapsible>
+              );
+            })}
+          </SidebarMenu>
+        </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter>
-      </SidebarFooter>
+
+      <SidebarFooter />
       <SidebarRail />
     </Sidebar>
-  )
+  );
 }

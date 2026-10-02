@@ -3,16 +3,14 @@
 import DadosUsuario from "@/components/DadosUsuario";
 import { ModeToggle } from "@/components/mode-toggle";
 import { NavUser } from "@/components/nav-user";
-import MobileNav from "@/components/Responsivo/Menubar";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import React from "react";
 
 export default function NavBar() {
   const { data: session, status } = useSession();
 
   return (
-    <nav className="bg-sidebar text-sidebar-foreground fixed top-0 left-0 w-full shadow-md px-6 py-4 border-b z-50 flex items-center ">
+    <nav className="bg-sidebar-foreground text-sidebar-foreground fixed top-0 left-0 w-full shadow-md px-6 py-4 border-b z-50 flex items-center ">
       {/* <div className='flex items-center justify-start '>
                 <MobileNav />
                 <div className='flex space-x-6 lg:p-2 pl-2'>
@@ -45,7 +43,7 @@ export default function NavBar() {
             avatar: "/defaultAvatar.png",
           }}
         />
-        <ModeToggle />
+        {/* <ModeToggle /> */}
       </div>
 
       {status === "authenticated" ? (

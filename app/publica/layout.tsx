@@ -6,9 +6,6 @@ import { Inter } from 'next/font/google'
 import '../globals.css'
 import NavBar from '../NavBar'
 import { AuthProvider } from '../providers/auth-provider'
-import RotaProtegida from '../RotaProtegida'
-import SideMenu from '../SideMenu'
-import { usePathname } from 'next/navigation';
 
 const inter = Inter({ subsets: ['latin'] })
 

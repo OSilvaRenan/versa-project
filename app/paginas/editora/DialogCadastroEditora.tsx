@@ -11,7 +11,6 @@ import { useState } from "react";
 import { EditoraDTO } from "./EditoraDTO";
 import { Button } from "@/components/ui/button";
 import { FormEditora } from "./FormEditora";
-import { Pencil } from "lucide-react";
 
 interface Props {
     codeditora?: number;
@@ -31,7 +30,6 @@ export function DialogCadastroEditora({ codeditora }: Props) {
         });
     };
 
-
     function OpenDialog() {
         if (open == false) {
             if (codeditora || codeditora == 0) {
@@ -41,7 +39,6 @@ export function DialogCadastroEditora({ codeditora }: Props) {
             }
         } else {
             setOpen(false);
-            window.location.reload();
         }
     };
 
@@ -49,20 +46,25 @@ export function DialogCadastroEditora({ codeditora }: Props) {
         <Dialog open={open} onOpenChange={OpenDialog} modal={true}>
             <DialogTrigger asChild>
                 {codeditora || codeditora == 0 ?
-                    <Button className="p-2" variant="ghost">
-                        <Pencil className="p-1" />
-                    </Button>
+                    <div className="font-bold text-gray-900 text-base cursor-pointer">
+                        {codeditora}
+                    </div>
                     :
-                    <Button className=" min-w-[100px] w-[100px] max-w-[100px]" variant="secondary">
-                        Nova
+                    <Button className="min-w-25 w-25 max-w-25" >
+                        Cadastrar
                     </Button>
                 }
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]" onPointerDownOutside={event => event.preventDefault()}>
-                <DialogHeader>
-                    <DialogTitle> {codeditora || codeditora == 0 ? "Editora " + editora?.Nomeditora : "Nova Editora"} </DialogTitle>
-                    <DialogDescription>
-                    </DialogDescription>
+
+            <DialogContent 
+                className="sm:max-w-3xl w-[90vw] max-h-[90vh] overflow-y-auto bg-card" 
+                onPointerDownOutside={event => event.preventDefault()}
+            >
+                <DialogHeader className="border-b pb-2">
+                    <DialogTitle >
+                        {codeditora || codeditora == 0 ? "Editar Editora - " + editora?.Nomeditora : "Nova Editora"}
+                    </DialogTitle>
+                    <DialogDescription />
                 </DialogHeader>
                 <FormEditora item={editora} onOpenChange={OpenDialog}/>
             </DialogContent>

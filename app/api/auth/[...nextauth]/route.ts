@@ -1,3 +1,4 @@
+import { EmpresaResponse } from "@/DTO/ConferenciaDTO";
 import NextAuth, { NextAuthOptions, DefaultSession } from "next-auth";
 import { JWT } from "next-auth/jwt";
 import CredentialsProvider from "next-auth/providers/credentials";
@@ -30,6 +31,8 @@ export interface UsuarioResponse {
   Token: string;
   Codempresacli: number;
   Codoperacao: number;
+  Nomempresa: string;
+  LstEmpresas : EmpresaResponse[];
 }
 
 declare module "next-auth" {

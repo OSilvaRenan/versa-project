@@ -1,15 +1,18 @@
 'use client'
 
+import { use } from "react";
 import { ConferenciaProvider } from "./_components/ConferenciaContext";
 
 interface LayoutProps {
     children: React.ReactNode;
-    params: { id: string };
+    params: Promise<{ id: string }>; 
 }
 
 export default function Layout({ children, params }: LayoutProps) {
+    const resolvedParams = use(params);
+
     return (
-        <ConferenciaProvider params={params}>
+        <ConferenciaProvider params={resolvedParams}>
             {children}
         </ConferenciaProvider>
     )
